@@ -1,59 +1,138 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import {signIn, signOut, useSession, getProviders} from 'next-auth/react'
+import React, {useEffect, useState} from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {signIn, signOut, getProviders} from "next-auth/react";
 
 const Navbar = () => {
+  const isUserLogIn = true;
 
-    const isUserLogIn = true;
+  const [providers, setProviders] = useState(null);
+  const [toggleDropDown, setToggleDropDown] = useState(false);
 
-    
+  useEffect(() => {
+    const fetchProviders = async () => {
+      const response = await getProviders();
+      setProviders(response);
+    };
+
+    fetchProviders();
+  }, []);
 
   return (
-    <nav className='flex-between w-full mb-16 p-3 px-3 bg-gradient-to-tr from-orange-400 to-orange-700 shadow-xl'>
-        <Link href="/" className='flex gap-2 flex-center'>
-            <Image 
-                src="/assets/images/next.svg"
-                width={60} 
-                height={60} 
-                alt="Next.js Logo"
-                className='object-contain'
+    <nav className="flex-between w-full mb-16 p-3 px-3 bg-gradient-to-tr from-orange-400 to-orange-700 shadow-xl">
+      <Link href="/" className="flex gap-2 flex-center">
+        <Image
+          src="/assets/images/next.svg"
+          width={60}
+          height={60}
+          alt="Next.js Logo"
+          className="object-contain"
+        />
+        <p className="logo_text">AI Menguasai</p>
+      </Link>
+
+      {/* Desktop Navigasi */}
+      <div className="sm:flex hidden">
+        {isUserLogIn ? (
+          <div className="flex gap-3 md:gap-5">
+            <Link href="/create-prompt" className="black_btn">
+              Create Post
+            </Link>
+
+            <button type="button" onClick={signOut} className="outline_btn">
+              Sign Out
+            </button>
+
+            <Link href="/profile">
+              <Image
+                src="/globe.svg"
+                width={25}
+                height={25}
+                className="rounded-full"
+                alt="Profile"
+              />
+            </Link>
+          </div>
+        ) : (
+          <>
+            {providers &&
+              Object.values(providers).map((provider) => (
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign In
+                </button>
+              ))}
+          </>
+        )}
+      </div>
+
+      {/* mobile navigasi */}
+      <div className="sm:hidden flex gap-3 relative">
+        {isUserLogIn ? (
+          <div className="flex relative">
+            <Image
+              src="/globe.svg"
+              width={25}
+              height={25}
+              className="rounded-full cursor-pointer"
+              alt="Next.js Logo"
+              onClick={() => setToggleDropDown((prev) => !prev)}
             />
-            <p className='logo_text'>AI Menguasai</p>
-        </Link>
 
-        {/* desktop navigasi */}
-        <div className='sm:flex hidden'>
-            {isUserLogIn ? (
-                <div className='flex gap-3 md:gap-5'>
-                    <Link href="/create-prompt" className='black_btn'>
-                        Create Post
-                    </Link>
+            {toggleDropDown && (
+              <div className="dropdown">
+                <Link
+                  href="/profile"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropDown(false)}
+                >
+                  My Profile
+                </Link>
 
-                    <button type='button' onClick={signOut} className='outline_btn'>
-                        Sign Out
-                    </button>
-
-                    <Link href="/profile">
-                        <Image 
-                            src="/globe.svg"
-                            width={25}
-                            height={25}
-                            className='rounded-full'
-                            alt='profile'
-                        />
-                    </Link>
-                </div>
-            ): (
-                <>
-
-                </>
+                <Link
+                  href="/create-prompt"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropDown(false)}
+                >
+                  Create Prompt
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setToggleDropDown(false);
+                    signOut();
+                  }}
+                  className="mt-5 w-full black_btn"
+                >
+                  Sign Out
+                </button>
+              </div>
             )}
-        </div>
+          </div>
+        ) : (
+          <>
+            {providers &&
+              Object.values(providers).map((provider) => (
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign In
+                </button>
+              ))}
+          </>
+        )}
+      </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
