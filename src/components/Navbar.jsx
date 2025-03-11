@@ -3,21 +3,22 @@
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {signIn, signOut, getProviders} from "next-auth/react";
+import {signIn, signOut, getProviders, useSession} from "next-auth/react";
 
 const Navbar = () => {
-  const isUserLogIn = true;
+  // const isUserLogIn = true;
+  const {data: session} = useSession();
 
   const [providers, setProviders] = useState(null);
   const [toggleDropDown, setToggleDropDown] = useState(false);
 
   useEffect(() => {
-    const fetchProviders = async () => {
+    const setUpProviders = async () => {
       const response = await getProviders();
       setProviders(response);
     };
 
-    fetchProviders();
+    setUpProviders();
   }, []);
 
   return (
@@ -35,7 +36,7 @@ const Navbar = () => {
 
       {/* Desktop Navigasi */}
       <div className="sm:flex hidden">
-        {isUserLogIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black_btn">
               Create Post
@@ -47,7 +48,7 @@ const Navbar = () => {
 
             <Link href="/profile">
               <Image
-                src="/globe.svg"
+                src={session?.user.image} // merubah agar imagenya poto dari email
                 width={25}
                 height={25}
                 className="rounded-full"
@@ -74,10 +75,10 @@ const Navbar = () => {
 
       {/* mobile navigasi */}
       <div className="sm:hidden flex gap-3 relative">
-        {isUserLogIn ? (
+        {session?.user ? (
           <div className="flex relative">
             <Image
-              src="/globe.svg"
+              src={session?.user.image} // merubah agar imagenya poto dari email
               width={25}
               height={25}
               className="rounded-full cursor-pointer"
