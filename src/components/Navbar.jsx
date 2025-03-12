@@ -22,7 +22,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="flex-between w-full mb-16 p-3 px-3 bg-gradient-to-tr from-orange-400 to-orange-700 shadow-xl">
+    <nav className="flex-between w-full p-3 px-3 bg-gradient-to-tr from-orange-400 to-orange-700 shadow-xl">
       <Link href="/" className="flex gap-2 flex-center">
         <Image
           src="/assets/images/next.svg"
