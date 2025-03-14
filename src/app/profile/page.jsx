@@ -3,10 +3,14 @@
 import Profile from "@/components/Profile";
 import {useSession} from "next-auth/react";
 import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 const page = () => {
   const {data: session} = useSession();
   const [posts, setPosts] = useState([]);
+
+  // router
+  const router = useRouter();
 
   // Mengambil data prompt dari API ketika komponen pertama kali dirender
   useEffect(() => {
@@ -20,7 +24,9 @@ const page = () => {
     if (session?.user.id) fetchPost();
   }, []); // Efek ini hanya dijalankan sekali saat komponen pertama kali dimuat (karena dependensi [] kosong)
 
-  const handleEdit = () => {};
+  const handleEdit = (post) => {
+    router.push(`/update-prompt?id=${post._id}`);
+  };
 
   const handleDelete = () => {};
 
