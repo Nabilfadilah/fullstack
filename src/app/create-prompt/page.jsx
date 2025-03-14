@@ -12,17 +12,32 @@ const page = () => {
     tag: "",
   });
 
+  // deklarasi session
+  const {data: session} = useSession();
+  const router = useRouter();
+
   const createPrompt = async (e) => {
     e.preventDefault();
+
+    // kondisi untuk mengecek session (ke cobaan pake nu di comment)
+    // if (!session?.user) {
+    //   alert("You must be logged in to create a prompt.");
+    //   return;
+    // }
+
     setSubmitting(true);
 
     // api call
     try {
       const response = await fetch("/api/prompt/new", {
         method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
         body: JSON.stringify({
           prompt: post.prompt,
           userId: session?.user.id,
+          // userId: session.user.id, // Pasti sudah terdefinisi
           tag: post.tag,
         }),
       });
