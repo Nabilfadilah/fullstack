@@ -21,22 +21,50 @@ const PromptCardList = ({data, handleTagClick}) => {
 // Komponen utama Feed bertanggung jawab untuk menangani pencarian dan mengambil data prompt dari API
 const Feed = () => {
   const [searchText, setSearchText] = useState(""); // State untuk menyimpan teks pencarian
-  const [post, setPost] = useState([]); // State untuk menyimpan daftar prompt yang diambil dari API
-
-  // Fungsi untuk menangani perubahan input pencarian (belum diimplementasikan)
-  const handleSearchChange = (e) => {};
+  const [posts, setPosts] = useState([]); // State untuk menyimpan daftar prompt yang diambil dari API
+  const [filteredPosts, setFilteredPosts] = useState([]);
 
   // Mengambil data prompt dari API ketika komponen pertama kali dirender
   useEffect(() => {
     const fetchPost = async () => {
-      const response = await fetch("/api/prompt"); // Memanggil endpoint API untuk mendapatkan data prompt
-      const data = await response.json(); // Mengonversi response menjadi format JSON
+      try {
+        const response = await fetch("/api/prompt"); // Memanggil endpoint API untuk mendapatkan data prompt
+        const data = await response.json(); // Mengonversi response menjadi format JSON
 
-      setPost(data); // Menyimpan data prompt ke dalam state
+        setPosts(data); // Menyimpan data prompt ke dalam state
+        setFilteredPosts(data); // default, tampilkan semua data
+      } catch (error) {
+        console.log("Error fetching posts:", error);
+      }
     };
 
     fetchPost();
   }, []); // Efek ini hanya dijalankan sekali saat komponen pertama kali dimuat (karena dependensi [] kosong)
+
+  // Fungsi untuk menangani perubahan input pencarian (belum diimplementasikan)
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchText(query);
+
+    // filter berdasarkan prompt, tag, atau username
+    const filtered = posts.filter(
+      (post) =>
+        post.prompt.toLowerCase().includes(query) ||
+        post.tag.toLowerCase().includes(query) ||
+        post.creator.username.toLowerCase().includes(query)
+    );
+
+    setFilteredPosts(filtered);
+  };
+
+  // handle click tag
+  const handleTagClick = (tag) => {
+    setSearchText(tag);
+    const filtered = posts.filter((post) =>
+      post.tag.toLowerCase().includes(tag.toLowerCase())
+    );
+    setFilteredPosts(filtered);
+  };
 
   return (
     <section className="feed">
@@ -53,7 +81,7 @@ const Feed = () => {
       </form>
 
       {/* Menampilkan daftar prompt yang diambil dari API */}
-      <PromptCardList data={post} handleTagClick={() => {}} />
+      <PromptCardList data={filteredPosts} handleTagClick={handleTagClick} />
     </section>
   );
 };
